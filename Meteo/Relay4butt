@@ -1,0 +1,78 @@
+void loop();
+void offall();
+void shutDown();
+void setup() {
+}
+class Relay {
+public:
+    Relay(int buttonPort, int relayPort, bool onStatus = false) {
+        _relayPort = relayPort;
+        _buttonPort = buttonPort;
+        _ON = onStatus;
+        _counter = 0;
+        pinMode(relayPort, INPUT);
+        pinMode(buttonPort, INPUT);
+    }
+    int getCount() { return _counter; }
+    int getButton() { return _buttonPort; }
+    bool getON() { return _ON; }
+    void reverseOnOff() {
+        if (_ON) {
+      pinMode(_relayPort, INPUT);
+        }
+        else {
+    pinMode(_relayPort, OUTPUT);
+digitalWrite(_relayPort, LOW);
+        }
+        _ON = !_ON;
+    }
+    void off() {
+      if (_ON) reverseOnOff();
+        _counter = 0;
+    }
+    void pressButt() {
+        _counter++;
+        if (!_ON) {
+            offall();
+            reverseOnOff();
+        }
+        if (_counter == 5) shutDown();
+    }
+private:
+    bool _ON;
+    int _relayPort;
+    int _counter;
+    int _buttonPort;
+};
+Relay relay1(2, 6);
+Relay relay2(3, 7);
+Relay relay3(4, 8);
+Relay relay4(11, 12);
+void shutDown() {
+    offall();
+    relay4.off();
+      delay(5000);
+}
+void offall() {
+    relay1.off();
+    relay2.off();
+    relay3.off();
+}
+void loop() {
+      if (digitalRead(relay1.getButton()) == HIGH) {
+        relay1.pressButt();
+                  delay(500);
+    }
+  else if (digitalRead(relay2.getButton()) == HIGH) {
+        relay2.pressButt();
+                  delay(500);
+    }
+  else if (digitalRead(relay3.getButton()) == HIGH) {
+        relay3.pressButt();
+          delay(500);
+    }
+  else if (digitalRead(relay4.getButton()) == HIGH) {
+        relay4.reverseOnOff();
+                  delay(500);
+    }
+}
